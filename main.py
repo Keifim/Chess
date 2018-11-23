@@ -56,6 +56,13 @@ class Chess:
       int(self.user_move_from[0:1]),
       int(self.user_move_from[1:2])]
 
+    #Rock
+    self.rock = []
+    for index, object in enumerate(self.layout):
+      for item, string in enumerate(object):
+        if index == int(self.user_move_from[0:1]) or item == int(self.user_move_from[1:2]):
+          self.rock.append(str(index)+str(item))
+
     # Pawn
     self.white_pawn = [int(self.user_move_from[0:1])-1, int(self.user_move_from[0:1])-2]
     self.black_pawn = [int(self.user_move_from[0:1])+1, int(self.user_move_from[0:1])+2]
@@ -71,6 +78,7 @@ class Chess:
           self.move_king = False
 
     elif self.move_rock == True:
+      #if int(self.user_move_to[0:1]) # TO DO
       pass
     elif self.move_bishop == True:
       pass
@@ -118,9 +126,15 @@ class Chess:
           self.move_king = True
           self.moveRules()
 
+        #Queen
+
+        # Rock
+        elif self.piece == self.white_pieces[2] or self.piece == self.black_pieces[2]:
+          self.move_rock = True
+          self.moveRules()
+
         # Pawn
-        elif self.piece == self.white_pieces[5] or self.piece == self.black_pieces[0]:
-          print("moving pawn")
+        elif self.piece == self.white_pieces[5] or self.piece == self.black_pieces[5]:
           self.move_pawn = True
           self.moveRules()
 
