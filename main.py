@@ -46,9 +46,17 @@ class Chess:
 
     self.movement()
 
+  def rock_queen_move(self):
+    self.rank = []
+    for index, object in enumerate(self.layout):
+      for item, string in enumerate(object):
+        if index == int(self.user_move_from[0:1]) or item == int(self.user_move_from[1:2]):
+          self.rank.append(str(index)+str(item))
+    return self.rank
+
   def moveRules(self):
 
-    # King
+    # King rules
     self.king = [int(self.user_move_from[0:1])+1,
       int(self.user_move_from[0:1])-1,
       int(self.user_move_from[1:2])+1,
@@ -56,17 +64,24 @@ class Chess:
       int(self.user_move_from[0:1]),
       int(self.user_move_from[1:2])]
 
-    #Rock
-    self.rock = []
-    for index, object in enumerate(self.layout):
-      for item, string in enumerate(object):
-        if index == int(self.user_move_from[0:1]) or item == int(self.user_move_from[1:2]):
-          self.rock.append(str(index)+str(item))
 
-    # Pawn
+    # Queen_bishop rules
+    self.queen_bishop_move = []
+    self.loop=0
+    for i in self.rock_queen_move():
+      if self.user_move_from[0:1] == i[0]:
+        self.loop+=1
+        self.queen_bishop_move.append(str(int(i[0])-int(self.loop))+str(int(self.user_move_from[1:2])-self.loop))
+        self.queen_bishop_move.append(str(int(i[0])+int(self.loop))+str(int(self.user_move_from[1:2])-self.loop))
+        self.queen_bishop_move.append(str(int(i[0])-int(self.loop))+str(int(self.user_move_from[1:2])+self.loop))
+        self.queen_bishop_move.append(str(int(i[0])+int(self.loop))+str(int(self.user_move_from[1:2])+self.loop))
+    print(self.queen_bishop_move)
+
+    # Pawn rules
     self.white_pawn = [int(self.user_move_from[0:1])-1, int(self.user_move_from[0:1])-2]
     self.black_pawn = [int(self.user_move_from[0:1])+1, int(self.user_move_from[0:1])+2]
 
+    # King move
     if self.move_king == True:
       if int(self.user_move_to[0:1]) in self.king[0:2] \
         and int(self.user_move_to[1:2]) in self.king[2:4] \
@@ -77,16 +92,25 @@ class Chess:
           self.movement()
           self.move_king = False
 
-    elif self.move_rock == True:
-      #if int(self.user_move_to[0:1]) # TO DO
-      pass
-    elif self.move_bishop == True:
-      pass
+    # Queen move
     elif self.move_queen == True:
-      pass
-    elif self.move_knight == True:
-      pass
+      if self.user_move_to in self.rock_queen_move() or self.user_move_to in self.queen_bishop_move:
+          self.movement()
+          self.move_queen = False
 
+    # Rock move
+    elif self.move_rock == True:
+      if self.user_move_to in self.rock_queen_move():
+        self.movement()
+        self.move_rock = False
+
+    # Bishop move
+    elif self.move_bishop == True:
+      if self.user_move_to in self.queen_bishop_move:
+        self.movement()
+        self.move_bishop = False
+
+    # Pawn move
     elif self.move_pawn == True:
       print(self.white_pawn_boost)
       if self.player == False \
@@ -126,11 +150,19 @@ class Chess:
           self.move_king = True
           self.moveRules()
 
-        #Queen
+        # Queen
+        if self.piece == self.white_pieces[1] or self.piece == self.black_pieces[1]:
+          self.move_queen = True
+          self.moveRules()
 
         # Rock
         elif self.piece == self.white_pieces[2] or self.piece == self.black_pieces[2]:
           self.move_rock = True
+          self.moveRules()
+
+        # Bishop
+        if self.piece == self.white_pieces[3] or self.piece == self.black_pieces[3]:
+          self.move_bishop = True
           self.moveRules()
 
         # Pawn
@@ -151,8 +183,8 @@ class Chess:
     print(self.lowerRow)
 
   def userinput(self):
-    if self.player == False: print("Player 1's turn")
-    else: print("Player 2's turn")
+    if self.player == False: print("Player 2's turn")
+    else: print("Player 1's turn")
     self.user_move_from = input("Move from: ")
     self.user_move_to = input("Move to: ")
     self.move = True
